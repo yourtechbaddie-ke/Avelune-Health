@@ -11,12 +11,14 @@
 - Session-local symptom journal and general appointment question prompts.
 - Care timeline with clearly labelled illustrative content.
 - Interactive appointment, information, caregiver and wellbeing preparation checklists.
+- Personal workspace preview with local appointment planning, task tracking and a support-circle list.
+- Role-aware patient/caregiver and clinician demonstration modes.
 - FastAPI service for public care-pathway content, platform health and safety guidance.
 - Automated frontend build and backend API tests through GitHub Actions.
 
 ## What is not connected yet
 
-There are no patient accounts, verified clinician accounts, secure health-record storage, caregiver permissions, real appointments, live consultations, AI conversations, facility directory, or live payment processing. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
+There are no live patient accounts, verified clinician accounts, secure health-record storage, enforceable caregiver permissions, provider-connected appointments, live consultations, AI conversations, verified facility directory, or live payment processing. Workspace appointments, tasks and support-circle entries are browser-session demonstrations only. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
 
 ## Run locally
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HeartHandshake, ShieldCheck } from 'lucide-react';
 
 type CarePlanProps = { role: 'patient' | 'clinician'; onNotice: (message: string) => void };
@@ -29,7 +29,24 @@ const pathways: Record<string, { title: string; intro: string; tasks: string[] }
 export default function CarePlan({ role, onNotice }: CarePlanProps) {
   const [pathway, setPathway] = useState('appointment');
   const [completed, setCompleted] = useState<string[]>([]);
-  const plan = useMemo(() => pathways[pathway], [pathway]);
+  const [apiPathways, setApiPathways] = useState<Record<string, { title: string; intro: string; tasks: string[] }> | null>(null);
+  useEffect(() => {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    if (!baseUrl) return;
+    let active = true;
+    fetch(`${baseUrl.replace(/\\/$/, '')}/v1/care-pathways`)
+      .then(response => { if (!response.ok) throw new Error('Care pathway service unavailable'); return response.json(); })
+      .then((items: Array<{ id: string; title: string; description: string; checklist: string[] }>) => {
+        if (!active || !Array.isArray(items)) return;
+        const mapped = Object.fromEntries(items.map(item => [item.id === 'understanding' ? 'diagnosis' : item.id, {
+          title: item.title, intro: item.description, tasks: item.checklist,
+        }]));
+        setApiPathways(mapped);
+      })
+      .catch(() => { /* Keep the accessible local demo content if the API is offline. */ });
+    return () => { active = false; };
+  }, []);
+  const plan = useMemo(() => apiPathways?.[pathway] ?? pathways[pathway], [pathway, apiPathways]);
   const toggleTask = (task: string) => setCompleted(current => current.includes(task) ? current.filter(item => item !== task) : [...current, task]);
   const changePathway = (value: string) => { setPathway(value); setCompleted([]); };
   return <section className="care-plan-section" id="care-plan">

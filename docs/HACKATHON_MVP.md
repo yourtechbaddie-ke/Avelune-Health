@@ -1,37 +1,75 @@
-# Avelune Health — Hackathon MVP
+# Avelune Health — PayPal + AI Hackathon MVP
 
-## Product promise
+## Core idea
 
-Avelune Health helps people affected by cancer feel less alone and better prepared for conversations with qualified care teams. Belle is an AI care companion for organisation and navigation—not diagnosis or treatment.
+Avelune Health is an AI-powered cancer-care navigation companion. Belle helps users understand general information, prepare for care conversations and navigate verified institutional resources. PayPal is the primary payment infrastructure for a sandbox demonstration of paid support access.
 
-## Demonstrable user journeys
+## Demonstrable journeys
 
-### Patient or caregiver
-1. Open the care overview and choose the patient/caregiver journey.
-2. Record a symptom or concern in the demo journal.
-3. Review the note and use it to prepare questions for a clinician.
-4. Explore the care timeline and support pathways.
-5. Meet Belle and see her boundaries explained clearly.
+### 1. Ask Belle for help
+1. Open the app and select **Chat with Belle**.
+2. Use a quick action or ask a general question.
+3. Belle calls the server-side AI endpoint and returns a response with links to authoritative public sources.
+4. Try appointment preparation or ask how to find an official cancer-care institution.
+5. Observe explicit clinical boundaries. Belle does not diagnose, prescribe or choose treatment.
 
-### Healthcare professional
-1. Choose the professional entry point.
-2. Review the planned clinician workspace and the information a patient may choose to share.
-3. Understand that clinician identity, access permissions and patient authorization must be verified before real records are available.
+### 2. Find cancer-care institutions
+1. Open **Care directory**.
+2. Review Kenya starter listings sourced from the National Cancer Institute of Kenya facility portal.
+3. Follow the source links and verify current service availability and clinician licensing directly.
+4. The directory is a dated, source-linked snapshot, not a live availability or certification guarantee.
 
-## Build order
+### 3. Test PayPal Sandbox
+1. Open **Payments**.
+2. Start the small synthetic USD checkout.
+3. Approve with a PayPal Sandbox buyer account.
+4. Return to Avelune; the frontend asks the backend to capture the order.
+5. The backend confirms completion with PayPal before showing a completed sandbox capture.
+6. No real funds or real clinical services are involved.
 
-1. **Reliable frontend demo:** mobile responsive, accessible navigation, meaningful working interactions and synthetic sample data.
-2. **Care journey:** symptom journal, appointment and medication timeline mock data, question preparation and caregiver consent explanation.
-3. **Belle:** a bounded conversational experience using synthetic demo inputs, clear AI disclosure, safe escalation language and a human-care handoff.
-4. **PayPal:** sandbox-only payment demonstration through a server-side Orders API. Never expose credentials in browser code; do not charge for medical care in the demo.
-5. **Secure service foundation:** authenticated API, role-based access, consent records, audit trail and encrypted storage. Keep real patient data out of the hackathon prototype.
-6. **Demo and evidence:** clean setup instructions, a reproducible build, screenshots and a short public walkthrough.
+### 4. Organise care
+1. Switch between patient, caregiver and clinician demonstration modes.
+2. Use the local appointment planner, checklist and support-circle list.
+3. These entries are session-only demo data and are not shared or saved to a medical record.
 
-## Definition of done for the demo
+## Technology
 
-- A reviewer can run the project from the README.
-- The core user journey works on a phone-sized viewport and desktop.
-- Buttons either complete a real demo interaction or clearly say that the capability is not yet connected.
-- No placeholder is presented as a real clinician, real appointment, real payment or real medical result.
-- No cancer diagnosis, treatment recommendation or facial/voice-based medical inference is produced.
-- The repository contains no API keys, patient records or other secrets.
+- React, TypeScript and Vite.
+- Python and FastAPI.
+- OpenAI API for Belle's server-side language-model responses.
+- PayPal REST Orders API in Sandbox for order creation and capture.
+- PayPal webhook signature verification endpoint.
+- AWS Cognito token-verification foundation (live User Pool connection is separate).
+- GitHub Actions frontend build and backend tests.
+
+## Required secrets
+
+Configure only in the backend host's secret manager:
+- `OPENAI_API_KEY`
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
+- `PAYPAL_WEBHOOK_ID`
+
+Never commit secrets or expose them in frontend variables.
+
+## What is intentionally not claimed
+
+- No private patient records are scraped, created or imported.
+- No live clinician appointments, video calls, therapist marketplace or clinical service booking is enabled.
+- No provider is described as individually verified solely from a facility listing.
+- No live payment, payout, refund or real patient charge is enabled.
+- No patient-specific treatment, drug, dosage or regimen is recommended.
+- The app is not a diagnostic device, clinical record system or emergency service.
+
+## Judging readiness checklist
+
+- [x] Public GitHub repository.
+- [x] Open-source MIT license at repository root.
+- [x] React + FastAPI application and setup documentation.
+- [x] AI chat interface and backend integration code.
+- [x] PayPal Sandbox order, approval, capture and webhook verification code.
+- [x] Source-linked institutional directory and public medical education resources.
+- [ ] Configure live hackathon demo secrets in the backend host.
+- [ ] Deploy frontend and API and test the complete hosted flow.
+- [ ] Record and publish a public YouTube demo under three minutes.
+- [ ] Complete final accessibility, security and browser testing.

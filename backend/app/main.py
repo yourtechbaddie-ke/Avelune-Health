@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from .auth import CognitoSettings, require_current_principal
 
 APP_VERSION = "0.1.0"
 origins = [origin.strip() for origin in os.getenv("AVELUNE_ALLOWED_ORIGINS", "http://localhost:5173").split(",") if origin.strip()]
@@ -149,3 +150,25 @@ PAYMENT_CAPABILITIES = PaymentCapabilitiesResponse(
 async def payment_capabilities():
     """Describe planned payment rails without accepting or initiating payments."""
     return PAYMENT_CAPABILITIES
+
+
+@app.get("/v1/auth/config", tags=["Authentication"])
+async def auth_config():
+    """Expose only public Cognito identifiers needed by a future browser client."""
+    settings = CognitoSettings.from_env()
+    if settings is None:
+        return {"configured": False, "provider": "aws-cognito"}
+    return {
+        "configured": True,
+        "provider": "aws-cognito",
+        "region": settings.region,
+        "user_pool_id": settings.user_pool_id,
+        "app_client_id": settings.app_client_id,
+        "issuer": settings.issuer,
+    }
+
+
+@app.get("/v1/auth/me", tags=["Authentication"])
+async def auth_me(principal: dict = Depends(require_current_principal)):
+    """Return minimal identity claims after verifying a Cognito access token."""
+    return principal

@@ -56,3 +56,13 @@ The API's `GET /v1/payment-capabilities` endpoint documents the intended rails a
 4. Currency metadata service and provider-backed FX quotes.
 5. Provider verification, invoice permissions, refunds/disputes and audited payout flows.
 6. Expand payment methods by country only after legal and provider eligibility review.
+
+
+## Official integration references
+
+- [PayPal Orders API integration](https://developer.paypal.com/whats-an-order/) — server-side order creation and capture; PayPal documents support in countries where PayPal is available and links to supported currency/country references.
+- [PayPal REST API integration guide](https://developer.paypal.com/api/rest/integration/orders-api) — order, authorisation and capture lifecycle.
+- [PayPal webhook verification](https://developer.paypal.com/api/rest/webhooks/rest/) — subscribe a HTTPS listener and verify incoming event messages before processing them.
+- [Safaricom Daraja developer portal](https://developer.safaricom.co.ke/) — official M-PESA API portal with sandbox app simulation and integration guides.
+
+These are implementation references, not evidence that Avelune has merchant credentials, a production account, or a live payment integration.

@@ -78,3 +78,5 @@
 .payment-guardrails svg{width:15px}
 .payment-disclaimer{max-width:1000px;margin:19px auto 0;font-size:9px;line-height:1.8;color:#839088;text-align:center}
 @media(max-width:800px){.payments-section{padding:65px 7vw}.payment-layout{grid-template-columns:1fr}.invoice-card,.checkout-card{padding:21px}.payment-guardrails{justify-content:flex-start}}
+
+.checkout-card .currency-code-input{width:100%;padding:12px;border:1px solid #dce5de;border-radius:9px;background:white;color:var(--deep);font-size:13px;letter-spacing:1.5px;text-transform:uppercase;outline-color:#78978a}

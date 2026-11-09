@@ -1,5 +1,5 @@
 import { useMemo, useState, type FormEvent } from 'react';
-import { CalendarDays, Check, CircleUserRound, ClipboardList, HeartHandshake, Plus, ShieldCheck, Trash2, Users, X } from 'lucide-react';
+import { CalendarDays, CircleUserRound, ClipboardList, HeartHandshake, Plus, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 
 type Role = 'patient' | 'clinician';
 type Appointment = { id: number; title: string; date: string; kind: string; note: string };

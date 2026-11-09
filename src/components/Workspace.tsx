@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { CalendarDays, CircleUserRound, ClipboardList, HeartHandshake, Plus, ShieldCheck, Trash2, Users, X } from 'lucide-react';
 
-type Role = 'patient' | 'clinician';
+type Role = 'patient' | 'caregiver' | 'clinician';
 type Appointment = { id: number; title: string; date: string; kind: string; note: string };
 type Task = { id: number; label: string; done: boolean };
 type Contact = { id: number; name: string; relationship: string };
@@ -58,12 +58,12 @@ export default function Workspace({ role }: { role: Role }) {
 
   return <section className="workspace-section" id="workspace">
     <div className="workspace-heading">
-      <div><span className="eyebrow">YOUR PRIVATE SPACE · DEMO MODE</span><h2>{role === 'patient' ? 'A little more organised.' : 'A clearer care workspace.'}</h2><p>{role === 'patient' ? 'Bring your next steps, appointments and chosen support into one calm space.' : 'A preview of the coordination tools intended for verified healthcare professionals.'}</p></div>
+      <div><span className="eyebrow">YOUR PRIVATE SPACE · DEMO MODE</span><h2>{role === 'clinician' ? 'A clearer care workspace.' : role === 'caregiver' ? 'Support someone with confidence.' : 'A little more organised.'}</h2><p>{role === 'clinician' ? 'A preview of the coordination tools intended for verified healthcare professionals.' : role === 'caregiver' ? 'Organise practical support while respecting the patient’s choices, privacy and permission.' : 'Bring your next steps, appointments and chosen support into one calm space.'}</p></div>
       <span className="workspace-demo"><ShieldCheck size={14}/> SYNTHETIC / LOCAL ONLY</span>
     </div>
     <div className="workspace-shell">
       <aside className="workspace-sidebar">
-        <div className="workspace-user"><span className="workspace-avatar">{role === 'patient' ? <CircleUserRound/> : <ShieldCheck/>}</span><div><b>{role === 'patient' ? 'My care space' : 'Professional preview'}</b><small>{role === 'patient' ? 'Patient / caregiver view' : 'Clinician demonstration'}</small></div></div>
+        <div className="workspace-user"><span className="workspace-avatar">{role === 'patient' ? <CircleUserRound/> : <ShieldCheck/>}</span><div><b>{role === 'clinician' ? 'Professional preview' : role === 'caregiver' ? 'Caregiver space' : 'My care space'}</b><small>{role === 'clinician' ? 'Clinician demonstration' : role === 'caregiver' ? 'Caregiver view · demo' : 'Patient view · demo'}</small></div></div>
         <nav aria-label="Workspace sections">
           {([{id:'overview',label:'Overview',icon:HeartHandshake},{id:'appointments',label:'Appointments',icon:CalendarDays},{id:'tasks',label:'My next steps',icon:ClipboardList},{id:'circle',label:'Support circle',icon:Users}] as const).map(item => { const Icon = item.icon; return <button key={item.id} className={tab === item.id ? 'workspace-nav active' : 'workspace-nav'} onClick={() => {setTab(item.id);setMessage('');}}><Icon size={17}/>{item.label}</button>; })}
         </nav>
@@ -71,8 +71,8 @@ export default function Workspace({ role }: { role: Role }) {
       </aside>
       <div className="workspace-main">
         {tab === 'overview' && <div className="workspace-view">
-          <span className="eyebrow">AT A GLANCE</span><h3>{role === 'patient' ? 'Welcome to your care space.' : 'Coordination overview.'}</h3>
-          <p className="workspace-intro">{role === 'patient' ? 'You do not have to organise everything at once. Start with one small next step.' : 'This is a synthetic preview. Real patient access requires identity verification, a legitimate care relationship and audited permissions.'}</p>
+          <span className="eyebrow">AT A GLANCE</span><h3>{role === 'clinician' ? 'Coordination overview.' : role === 'caregiver' ? 'Support that respects their choices.' : 'Welcome to your care space.'}</h3>
+          <p className="workspace-intro">{role === 'clinician' ? 'This is a synthetic preview. Real patient access requires identity verification, a legitimate care relationship and audited permissions.' : role === 'caregiver' ? 'Start by agreeing what help is wanted, what information may be shared and which tasks you can take on.' : 'You do not have to organise everything at once. Start with one small next step.'}</p>
           <div className="workspace-stats"><article><CalendarDays/><b>{appointments.length}</b><span>Appointments added</span></article><article><ClipboardList/><b>{completed}/{tasks.length}</b><span>Next steps complete</span></article><article><Users/><b>{contacts.length}</b><span>Support people listed</span></article></div>
           <div className="workspace-next"><div><span className="eyebrow">YOUR NEXT STEP</span><b>{tasks.find(task => !task.done)?.label ?? 'Your current checklist is complete.'}</b><small>{tasks.length - completed} tasks remaining</small></div><button className="button primary" onClick={() => setTab('tasks')}>Open checklist</button></div>
           <div className="workspace-callout"><HeartHandshake/><p><b>Care is personal.</b> Only include people in your support circle when you are comfortable. In the live product, sharing information will require explicit permission and a way to revoke access.</p></div>

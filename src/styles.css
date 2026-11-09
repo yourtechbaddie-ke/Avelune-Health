@@ -7,3 +7,28 @@
 
 .timeline-section{padding:88px 10vw;background:#f2f4ef}.timeline-heading{max-width:1050px;margin:0 auto 32px;display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.timeline-heading h2{font:500 clamp(34px,4vw,48px)/1.1 'Playfair Display',serif;color:var(--deep);letter-spacing:-1.4px;margin:12px 0}.timeline-heading p{font-size:13px;line-height:1.8;color:#71807a;max-width:540px}.demo-label{font-size:9px;letter-spacing:1.5px;color:#70857b;border:1px solid #d1ddd4;border-radius:30px;padding:9px 13px;white-space:nowrap}.timeline-list{max-width:1050px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.timeline-item{position:relative;display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid #e5eae4;border-radius:14px;padding:20px;min-height:175px}.timeline-marker{width:38px;height:38px;border-radius:12px;background:#eaf0eb;color:var(--teal);display:grid;place-items:center;flex-shrink:0}.timeline-content>span{font-size:9px;letter-spacing:.6px;color:#8b9991}.timeline-content h3{font:18px 'Playfair Display',serif;color:var(--deep);margin:9px 0}.timeline-content p{font-size:10px;line-height:1.7;color:#7b8982;margin:0}.timeline-step{position:absolute;right:15px;bottom:12px;color:#c1cbc3;font:italic 18px 'Playfair Display',serif}.timeline-footer{max-width:1050px;margin:18px auto 0;display:flex;align-items:center;gap:12px;color:#7c8b82}.timeline-footer>svg{flex-shrink:0}.timeline-footer p{font-size:10px;line-height:1.7;flex:1}.timeline-footer .button{font-size:10px;padding:11px 14px;white-space:nowrap}
 @media(max-width:800px){.timeline-section{padding:65px 7vw}.timeline-list{grid-template-columns:1fr}.timeline-item{min-height:unset}.timeline-heading{align-items:flex-start;flex-direction:column}.timeline-footer{align-items:flex-start;flex-wrap:wrap}.timeline-footer p{min-width:calc(100% - 40px)}.timeline-footer .button{margin-left:29px}}
+
+
+.care-plan-section{padding:88px 10vw;background:#fff}
+.care-plan-heading{max-width:760px;margin:0 auto 32px;text-align:center}
+.care-plan-heading h2{font:500 clamp(34px,4vw,48px)/1.12 'Playfair Display',serif;color:var(--deep);letter-spacing:-1.3px;margin:12px 0}
+.care-plan-heading p{font-size:13px;line-height:1.8;color:#71807a}
+.care-plan-card{max-width:1050px;margin:auto;display:grid;grid-template-columns:.85fr 1.15fr;border:1px solid #e4eae4;border-radius:18px;overflow:hidden;background:#fbfcf9}
+.care-plan-controls{padding:28px;background:#f0f4ef}
+.care-plan-controls>label{display:block;font-size:11px;font-weight:700;color:#52645f;margin-bottom:10px}
+.care-plan-controls select{width:100%;padding:13px;border:1px solid #d6e0d8;border-radius:9px;background:#fff;color:var(--deep);font:12px 'DM Sans',sans-serif}
+.care-plan-note{display:flex;gap:12px;margin-top:28px;color:#648074;font-size:11px;line-height:1.8}
+.care-plan-note svg{flex-shrink:0}
+.care-plan-note b{display:block;color:var(--deep);font:20px 'Playfair Display',serif;margin-bottom:6px}
+.care-plan-tasks{padding:28px}
+.care-plan-progress{display:flex;justify-content:space-between;gap:10px;color:#6c8076;font-size:9px;letter-spacing:1px}
+.care-plan-progress b{letter-spacing:0;font-size:10px;color:var(--deep)}
+.care-plan-progress-track{height:5px;background:#e4eae4;border-radius:10px;margin:13px 0 20px;overflow:hidden}
+.care-plan-progress-track span{display:block;height:100%;background:#739486;border-radius:10px;transition:width .2s ease}
+.care-plan-task{display:flex;align-items:flex-start;gap:11px;padding:13px 0;border-bottom:1px solid #edf0ec;color:#586b63;font-size:11px;line-height:1.6;cursor:pointer}
+.care-plan-task input{accent-color:#315d63;margin-top:2px;width:15px;height:15px;flex-shrink:0}
+.care-plan-task.done span{text-decoration:line-through;color:#9aa69f}
+.care-plan-reset{margin-top:16px;font-size:10px;padding:10px 15px}
+.care-plan-safety{max-width:1050px;margin:18px auto 0;display:flex;align-items:flex-start;gap:9px;color:#7e8c84;font-size:10px;line-height:1.7}
+.care-plan-safety svg{flex-shrink:0;margin-top:1px}
+@media(max-width:800px){.care-plan-section{padding:65px 7vw}.care-plan-card{grid-template-columns:1fr}.care-plan-controls,.care-plan-tasks{padding:22px}}

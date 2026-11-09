@@ -16,7 +16,7 @@
 
 ## What is not connected yet
 
-There are no patient accounts, verified clinician accounts, secure health-record storage, caregiver permissions, real appointments, live consultations, AI conversations, facility directory, or payments. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
+There are no patient accounts, verified clinician accounts, secure health-record storage, caregiver permissions, real appointments, live consultations, AI conversations, facility directory, or live payment processing. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
 
 ## Run locally
 
@@ -47,7 +47,7 @@ Available API routes:
 
 - `GET /health` — service health and data-mode disclosure.
 - `GET /v1/care-pathways` — public preparation checklists used by the frontend when the API is available.
-- `GET /v1/safety` — clinical-safety boundaries and urgent-care guidance.
+- `GET /v1/safety` — clinical-safety boundaries and urgent-care guidance.\n- `GET /v1/payment-capabilities` — planned payment rails and currency/security constraints; does not initiate payments.
 
 API documentation is available at http://localhost:8000/docs during local development.
 
@@ -61,14 +61,14 @@ Copy `.env.example` to `.env.local` for the frontend. Configure `AVELUNE_ALLOWED
 - API: FastAPI; currently limited to public, non-personal content.
 - Data: secure persistence is not implemented. Select and review a database, encryption, backups, access controls and retention design before storing any health information.
 - AI: provider-agnostic Belle integration, subject to privacy, consent and clinical-safety review.
-- Payments: PayPal integration through server-side order creation and capture; not implemented.
+- Payments: PayPal, M-Pesa and bank transfer are defined as planned payment rails. Live charges are deliberately disabled; currency handling is designed around ISO 4217 codes, with conversion and provider settlement support still to be integrated.
 - Clinical operations: qualified professionals retain responsibility for diagnosis, triage and treatment.
 
 ## Privacy and safety
 
 Before real patient use, complete a privacy impact assessment and jurisdiction-specific legal and clinical review. Implement informed consent, data minimisation, encryption in transit and at rest, authentication, least-privilege role permissions, caregiver authorisation and revocation, audit logs, retention/deletion, backups and incident response. Review all AI providers and subprocessors before sending any health information to them.
 
-See [Safety and Privacy Guardrails](docs/SAFETY_AND_PRIVACY.md) and the [Hackathon MVP plan](docs/HACKATHON_MVP.md).
+See [Safety and Privacy Guardrails](docs/SAFETY_AND_PRIVACY.md), the [Hackathon MVP plan](docs/HACKATHON_MVP.md), [Account and Access-Control Design](docs/ACCOUNT_ACCESS_DESIGN.md), and [Payments and Global Currency Design](docs/PAYMENTS_AND_GLOBAL_CURRENCIES.md).
 
 ## License
 

@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { ArrowUpRight, Bot, ExternalLink, LoaderCircle, MessageCircle, ShieldCheck, Sparkles, X } from 'lucide-react';
+import { ArrowUpRight, Bot, ExternalLink, LoaderCircle, ShieldCheck, Sparkles, X } from 'lucide-react';
 
 type Message = { role: 'user' | 'assistant'; content: string; sources?: { title: string; url: string }[] };
 const API = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';

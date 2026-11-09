@@ -22,13 +22,13 @@ npm run dev
 
 Open the local URL printed by Vite. Build with `npm run build` and preview with `npm run preview`.
 
-## Environment
+## Run the API locally\n\nSee [backend setup instructions](backend/README.md). The API currently serves static, non-personal content only.\n\n## Environment
 Copy `.env.example` to `.env.local` and fill in credentials only when implementing the corresponding server-side integrations. Never expose PayPal secrets, database service keys, medical API credentials or model keys in client code.
 
 ## Planned architecture
 - Frontend: React + TypeScript + Vite; responsive PWA baseline
 - AI: provider-agnostic conversational layer; real-time voice/video avatar integration is a separate secured service
-- Backend: authenticated API, encrypted database, role-based access and audit trail
+- Backend: FastAPI foundation serving non-personal care-navigation and safety content; authenticated records API and encrypted database remain future work
 - Payments: PayPal Orders API through a server-side integration
 - Clinical operations: licensed clinicians retain responsibility for diagnosis, triage and treatment
 

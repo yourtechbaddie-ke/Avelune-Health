@@ -27,7 +27,7 @@ export default function PaymentCenter() {
       const response = await fetch(`${API}/v1/payments/paypal/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount, currency, description: 'Avelune Health demo support session' }),
+        body: JSON.stringify({ amount, currency: 'USD', description: 'Avelune Health demo support session' }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail ?? 'PayPal checkout could not be started.');

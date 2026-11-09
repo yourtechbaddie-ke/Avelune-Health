@@ -37,3 +37,18 @@ def test_only_known_explicit_cognito_groups_map_to_roles():
     ]) == ["clinician", "patient"]
     assert roles_from_groups(["avelune-admin"]) == ["admin"]
     assert roles_from_groups("avelune-admin") == []
+
+
+def test_auth_config_is_disabled_without_cognito_settings(monkeypatch):
+    for key in ("AWS_COGNITO_REGION", "AWS_COGNITO_USER_POOL_ID", "AWS_COGNITO_APP_CLIENT_ID"):
+        monkeypatch.delenv(key, raising=False)
+    response = client.get("/v1/auth/config")
+    assert response.status_code == 200
+    assert response.json() == {"configured": False, "provider": "aws-cognito"}
+
+
+def test_auth_me_rejects_requests_when_cognito_is_not_configured(monkeypatch):
+    for key in ("AWS_COGNITO_REGION", "AWS_COGNITO_USER_POOL_ID", "AWS_COGNITO_APP_CLIENT_ID"):
+        monkeypatch.delenv(key, raising=False)
+    response = client.get("/v1/auth/me")
+    assert response.status_code == 503

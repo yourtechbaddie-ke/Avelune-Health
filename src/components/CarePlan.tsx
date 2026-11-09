@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ClipboardCheck, HeartHandshake, ShieldCheck } from 'lucide-react';
+import { HeartHandshake, ShieldCheck } from 'lucide-react';
 
 type CarePlanProps = { role: 'patient' | 'clinician'; onNotice: (message: string) => void };
 

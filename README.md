@@ -1,43 +1,28 @@
 # Avelune Health
 
-**The Love of Life.** An inclusive, AI-assisted cancer-care navigation and support platform concept connecting patients, caregivers and qualified healthcare professionals. Belle is the planned AI care companion.
+**The Love of Life.** An AI-assisted cancer-care navigation platform connecting patients, caregivers and qualified healthcare professionals. **Belle** is the AI care-navigation companion; **PayPal** is the primary payment rail.
 
-> **Clinical safety:** Avelune Health is a care-navigation prototype, not a diagnostic device or emergency service. Belle must not diagnose cancer, infer disease from images or voice, prescribe treatment, or replace a qualified clinician. For severe, sudden or rapidly worsening symptoms, seek urgent medical care.
+## Hackathon experience
 
-## What works in this prototype
-
-- Responsive React + TypeScript web experience.
-- Patient and healthcare-professional demo views.
-- Session-local symptom journal and general appointment question prompts.
-- Care timeline with clearly labelled illustrative content.
-- Interactive appointment, information, caregiver and wellbeing preparation checklists.
-- Personal workspace preview with local appointment planning, task tracking and a support-circle list.
-- Role-aware patient/caregiver and clinician demonstration modes.
-- FastAPI service for public care-pathway content, platform health and safety guidance.
-- Automated frontend build and backend API tests through GitHub Actions.
-
-## What is not connected yet
-
-There are no live patient accounts, verified clinician accounts, secure health-record storage, enforceable caregiver permissions, provider-connected appointments, live consultations, AI conversations, verified facility directory, or live payment processing. Workspace appointments, tasks and support-circle entries are browser-session demonstrations only. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
+- **Belle AI:** live AI chat through the server-side OpenAI API integration. Belle helps with general cancer-care education, question preparation and care navigation; it must not diagnose, prescribe or recommend individual treatment.
+- **PayPal Sandbox:** server-created checkout orders, hosted PayPal approval, server-side capture and webhook-signature verification. Sandbox only; no real charges.
+- **Verified Kenya care directory:** source-linked institutional facilities and public institutional contacts, with explicit verification caveats.
+- **Evidence-linked education:** links to the National Cancer Institute of Kenya, Kenya National Cancer Treatment Protocols, the US National Cancer Institute's general treatment overview and KMPDC registers.
+- Patient/caregiver/clinician demo workspace, session-only notes, appointment planning, care timeline and preparation checklists.
+- FastAPI backend, React + TypeScript frontend, automated CI.
 
 ## Run locally
 
 Requirements: Node.js 20+ and Python 3.12+.
 
-### Frontend
-
+Frontend:
 ```bash
 npm install
 cp .env.example .env.local
 npm run dev
 ```
 
-Vite prints the local frontend URL (normally http://localhost:5173).
-
-### API
-
-In a second terminal:
-
+API:
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
@@ -45,32 +30,45 @@ pip install -r backend/requirements.txt
 uvicorn app.main:app --app-dir backend --reload --port 8000
 ```
 
-Available API routes:
+## Required server environment
 
-- `GET /health` — service health and data-mode disclosure.
-- `GET /v1/care-pathways` — public preparation checklists used by the frontend when the API is available.
-- `GET /v1/safety` — clinical-safety boundaries and urgent-care guidance.\n- `GET /v1/payment-capabilities` — planned payment rails and currency/security constraints; does not initiate payments.
+Set these only in the backend environment / secret manager. Never commit them or put them in Vite variables:
 
-API documentation is available at http://localhost:8000/docs during local development.
+- `OPENAI_API_KEY` — enables live Belle AI.
+- `OPENAI_MODEL` — optional; defaults to `gpt-4.1-mini`.
+- `PAYPAL_CLIENT_ID` and `PAYPAL_CLIENT_SECRET` — PayPal Developer Sandbox REST app credentials.
+- `PAYPAL_API_BASE=https://api-m.sandbox.paypal.com`.
+- `PAYPAL_WEBHOOK_ID` — Sandbox webhook ID for the verification endpoint.
+- `PAYPAL_RETURN_URL` and `PAYPAL_CANCEL_URL` — browser return destinations.
+- `AVELUNE_ALLOWED_ORIGINS` — exact frontend origins, comma separated.
+- Optional AWS Cognito variables for the authentication foundation.
 
-## Environment
+Frontend optional setting: `VITE_API_BASE_URL` (for example `http://localhost:8000`). No PayPal secret or AI key belongs in the frontend.
 
-Copy `.env.example` to `.env.local` for the frontend. Configure `AVELUNE_ALLOWED_ORIGINS` on the API host as a comma-separated list of exact frontend origins. Never put database credentials, PayPal secrets, health-data keys or AI-provider secrets in Vite/browser variables or source control.
+## PayPal Sandbox demo flow
 
-## Planned architecture
+1. Create a REST app in the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications/sandbox).
+2. Add its sandbox client ID and secret to the API host's secret store.
+3. Set a sandbox webhook endpoint to `POST /v1/payments/paypal/webhook/verify`, subscribe to relevant checkout/order/capture events, and configure the returned webhook ID.
+4. Start Belle chat to test the AI integration.
+5. Use the PayPal sandbox buyer account to approve the small test order. The UI return alone does not mark an invoice paid; the API capture endpoint must return `COMPLETED`.
 
-- Frontend: React, TypeScript and Vite; responsive PWA foundation.
-- API: FastAPI; currently limited to public, non-personal content.
-- Data: secure persistence is not implemented. Select and review a database, encryption, backups, access controls and retention design before storing any health information.
-- AI: provider-agnostic Belle integration, subject to privacy, consent and clinical-safety review.
-- Payments: PayPal, M-Pesa and bank transfer are defined as planned payment rails. Live charges are deliberately disabled; currency handling is designed around ISO 4217 codes, with conversion and provider settlement support still to be integrated.
-- Clinical operations: qualified professionals retain responsibility for diagnosis, triage and treatment.
+API routes include `GET /health`, `GET /v1/care-pathways`, `GET /v1/safety`, `GET /v1/payment-capabilities`, `POST /v1/belle/chat`, `POST /v1/payments/paypal/orders`, `POST /v1/payments/paypal/orders/{order_id}/capture`, and `POST /v1/payments/paypal/webhook/verify`.
 
-## Privacy and safety
+## Verified public information and its limits
 
-Before real patient use, complete a privacy impact assessment and jurisdiction-specific legal and clinical review. Implement informed consent, data minimisation, encryption in transit and at rest, authentication, least-privilege role permissions, caregiver authorisation and revocation, audit logs, retention/deletion, backups and incident response. Review all AI providers and subprocessors before sending any health information to them.
+The Kenya directory snapshot is based on the [National Cancer Institute of Kenya facility portal](https://portal.ncikenya.go.ke/en/facilities), checked 10 November 2026. KNH and KUTRRH service details also link to their official institutional pages. Facility listings and contact information can change; the snapshot does not guarantee current service availability, NCI certification, SHA contracting, insurance coverage, fees or appointment availability. Confirm directly before travelling or paying. Verify practitioners using the [KMPDC register](https://registers.kmpdc.go.ke/). No private patient records or social-media-sourced personal contact information is included.
 
-See [Safety and Privacy Guardrails](docs/SAFETY_AND_PRIVACY.md), the [Hackathon MVP plan](docs/HACKATHON_MVP.md), [Account and Access-Control Design](docs/ACCOUNT_ACCESS_DESIGN.md), and [Payments and Global Currency Design](docs/PAYMENTS_AND_GLOBAL_CURRENCIES.md).
+General treatment education is linked to the [National Cancer Institute (US)](https://www.cancer.gov/about-cancer/treatment/types) and the [Kenya National Cancer Treatment Protocols](https://uploads.ncikenya.go.ke/uploads/policy/National-cancer-treatment-Protocols-2019.pdf). These describe broad modalities and clinical guidance; they are not patient-specific treatment instructions. Medicine choice, dosage and treatment sequence must be determined by the treating oncology team.
+
+## Important limitations
+
+- Live AI requires an API key and must undergo privacy/security review before real patient data is processed. Do not enter identifying information or upload medical records in this demo.
+- PayPal is Sandbox only. No real patient fees, therapy bookings, provider payouts, refunds or production charges are enabled.
+- No video calls or live clinician booking are implemented yet. Do not advertise these as available.
+- Workspace entries are session-only; no real medical record storage is implemented.
+- Provider profiles, credentials, appointment calendars and clinician availability are not yet onboarded/verified.
+- This is a hackathon prototype, not a clinical service or emergency service. For severe, sudden or rapidly worsening symptoms, seek urgent medical attention.
 
 ## License
 

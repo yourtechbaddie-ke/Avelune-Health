@@ -99,3 +99,53 @@ async def safety():
 @app.exception_handler(Exception)
 async def safe_unexpected_error(request, exc):
     return JSONResponse(status_code=500, content={"detail": "An unexpected server error occurred."})
+
+
+class PaymentMethodCapability(BaseModel):
+    id: str
+    name: str
+    status: str
+    availability: str
+    notes: str
+
+class PaymentCapabilitiesResponse(BaseModel):
+    enabled_for_live_payments: bool
+    currency_standard: str
+    currency_conversion: str
+    methods: list[PaymentMethodCapability]
+    safety_notice: str
+
+PAYMENT_CAPABILITIES = PaymentCapabilitiesResponse(
+    enabled_for_live_payments=False,
+    currency_standard="ISO 4217 three-letter currency codes",
+    currency_conversion="Not connected. The checkout must show the provider-confirmed amount and currency; no exchange rate is estimated by this API.",
+    methods=[
+        PaymentMethodCapability(
+            id="paypal",
+            name="PayPal",
+            status="planned",
+            availability="Subject to PayPal merchant-country, account and currency support",
+            notes="Server-created orders, server-side capture and verified webhooks. Never expose the PayPal secret in the browser.",
+        ),
+        PaymentMethodCapability(
+            id="mpesa",
+            name="M-Pesa",
+            status="planned",
+            availability="Initially Kenya; other mobile-money markets require a locally supported provider",
+            notes="Use an authorised Daraja/payment-aggregator integration, server-side STK push and signed/validated callbacks. Do not treat a client screenshot as proof of payment.",
+        ),
+        PaymentMethodCapability(
+            id="bank_transfer",
+            name="Bank transfer",
+            status="planned",
+            availability="Country and bank dependent",
+            notes="Use provider-issued beneficiary and reference details, reconcile against bank/provider confirmation, and never mark a transfer paid from patient-submitted evidence alone.",
+        ),
+    ],
+    safety_notice="This prototype does not create charges, collect payment credentials, store bank details or accept health information. Payments must be for an itemised service from a verified provider, with a clear refund and dispute route.",
+)
+
+@app.get("/v1/payment-capabilities", response_model=PaymentCapabilitiesResponse, tags=["Payments"])
+async def payment_capabilities():
+    """Describe planned payment rails without accepting or initiating payments."""
+    return PAYMENT_CAPABILITIES

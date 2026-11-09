@@ -1,4 +1,4 @@
-import { CalendarDays, CheckCircle2, Clock3, Pill, ShieldCheck, Users } from 'lucide-react';
+import { CalendarDays, CheckCircle2, Pill, ShieldCheck, Users } from 'lucide-react';
 
 type CareTimelineProps = { role: 'patient' | 'clinician'; onNotice: (message: string) => void };
 

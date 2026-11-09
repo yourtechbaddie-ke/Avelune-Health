@@ -1,22 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { ArrowUpRight, Building2, CheckCircle2, CreditCard, LockKeyhole, ShieldCheck, Smartphone } from 'lucide-react';
 
 type PaymentMethod = 'paypal' | 'mpesa' | 'bank_transfer';
 
-const currencies = [
-  { code: 'KES', label: 'Kenyan shilling' },
-  { code: 'USD', label: 'US dollar' },
-  { code: 'EUR', label: 'Euro' },
-  { code: 'GBP', label: 'Pound sterling' },
-  { code: 'CAD', label: 'Canadian dollar' },
-  { code: 'AUD', label: 'Australian dollar' },
-  { code: 'INR', label: 'Indian rupee' },
-  { code: 'NGN', label: 'Nigerian naira' },
-  { code: 'ZAR', label: 'South African rand' },
-  { code: 'JPY', label: 'Japanese yen' },
-  { code: 'AED', label: 'UAE dirham' },
-  { code: 'CHF', label: 'Swiss franc' },
-];
+
 
 const methods: { id: PaymentMethod; label: string; description: string; icon: typeof CreditCard }[] = [
   { id: 'paypal', label: 'PayPal', description: 'Pay securely where PayPal is supported', icon: CreditCard },
@@ -28,7 +15,6 @@ export default function PaymentCenter() {
   const [method, setMethod] = useState<PaymentMethod>('mpesa');
   const [currency, setCurrency] = useState('KES');
   const [notice, setNotice] = useState('');
-  const selectedCurrency = useMemo(() => currencies.find(item => item.code === currency), [currency]);
 
   return <section className="payments-section" id="payments">
     <div className="payments-heading">
@@ -52,12 +38,10 @@ export default function PaymentCenter() {
             <Icon/><span><b>{label}</b><small>{description}</small></span><span className="method-radio">{method === id ? '✓' : ''}</span>
           </button>)}
         </div>
-        <label className="currency-label" htmlFor="payment-currency">Preferred payment currency</label>
-        <select id="payment-currency" value={currency} onChange={event => { setCurrency(event.target.value); setNotice(''); }}>
-          {currencies.map(item => <option key={item.code} value={item.code}>{item.code} — {item.label}</option>)}
-        </select>
-        <p className="currency-note">Currency selection is a preference only. This demo does not convert the invoice or quote an exchange rate. At checkout, Avelune must show the exact provider-confirmed amount, currency and any fees before you approve.</p>
-        <button type="button" className="button primary full" onClick={() => setNotice('Secure checkout is not connected yet. No payment has been initiated or collected.')}>Preview payment <ArrowUpRight size={16}/></button>
+        <label className="currency-label" htmlFor="payment-currency">Preferred payment currency (ISO 4217)</label>
+        <input id="payment-currency" className="currency-code-input" value={currency} maxLength={3} autoCapitalize="characters" autoComplete="off" placeholder="e.g. KES, USD, EUR" onChange={event => { setCurrency(event.target.value.toUpperCase().replace(/[^A-Z]/g, '')); setNotice(''); }} aria-describedby="currency-help" />
+        <p className="currency-note" id="currency-help">Enter any three-letter ISO 4217 currency code. The live checkout will validate whether the selected provider supports it in your country. This demo does not convert the invoice or quote an exchange rate; the final amount, currency and fees must be provider-confirmed before approval.</p>
+        <button type="button" className="button primary full" disabled={currency.length !== 3} onClick={() => setNotice('Secure checkout is not connected yet. No payment has been initiated or collected.')}>Preview payment <ArrowUpRight size={16}/></button>
         {notice && <p className="payment-notice" role="status"><CheckCircle2 size={16}/>{notice}</p>}
         <p className="payment-safety"><ShieldCheck size={15}/> Avelune will never ask for your M-Pesa PIN, card security code or online-banking password. Provider confirmation—not a screenshot—will determine payment status.</p>
       </article>

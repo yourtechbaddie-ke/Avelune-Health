@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowUpRight, CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
@@ -7,7 +7,18 @@ export default function PaymentCenter() {
   const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const [amount, setAmount] = useState('5.00');
-  const [currency, setCurrency] = useState('USD');
+  const [captureStatus, setCaptureStatus] = useState('');
+  const returnedOrder = new URLSearchParams(window.location.search).get('token');
+
+  useEffect(() => {
+    if (!returnedOrder) return;
+    let cancelled = false;
+    fetch(`${API}/v1/payments/paypal/orders/${encodeURIComponent(returnedOrder)}/capture`, { method: 'POST' })
+      .then(async response => { const data = await response.json(); if (!response.ok) throw new Error(data.detail ?? 'Capture could not be verified.'); return data; })
+      .then(data => { if (!cancelled) setCaptureStatus(data.status === 'COMPLETED' ? 'PayPal Sandbox confirms this test capture is completed.' : 'PayPal has not confirmed a completed capture.'); })
+      .catch(error => { if (!cancelled) setCaptureStatus(error instanceof Error ? error.message : 'Capture verification failed.'); });
+    return () => { cancelled = true; };
+  }, [returnedOrder]);
 
   async function beginCheckout() {
     setNotice('');
@@ -30,9 +41,7 @@ export default function PaymentCenter() {
     }
   }
 
-  const params = new URLSearchParams(window.location.search);
-  const returnedOrder = params.get('token');
-  const cancelled = params.has('cancelled');
+  const cancelled = new URLSearchParams(window.location.search).has('cancelled');
 
   return <section className="payments-section" id="payments">
     <div className="payments-heading">
@@ -55,7 +64,7 @@ export default function PaymentCenter() {
         <input id="demo-amount" className="currency-code-input" value={amount} inputMode="decimal" onChange={event => setAmount(event.target.value)} aria-label="Sandbox amount in USD"/>
         <p className="currency-note">For the hackathon demonstration only. The API validates the amount and creates the order using server-side PayPal Sandbox credentials. No card details or PayPal passwords are handled by Avelune.</p>
         <button type="button" className="button primary full" disabled={busy || !/^\d+(\.\d{1,2})?$/.test(amount) || Number(amount) <= 0 || Number(amount) > 100} onClick={beginCheckout}>{busy ? 'Connecting to PayPal…' : 'Pay with PayPal Sandbox'} <ArrowUpRight size={16}/></button>
-        {returnedOrder && <p className="payment-notice" role="status"><CheckCircle2 size={16}/> Returned from PayPal with order reference {returnedOrder}. The server must capture and verify it before marking any invoice paid.</p>}
+        {returnedOrder && <p className="payment-notice" role="status"><CheckCircle2 size={16}/>{captureStatus || 'Verifying PayPal Sandbox capture…'}</p>}
         {cancelled && <p className="payment-notice" role="status">PayPal checkout was cancelled. No payment has been recorded.</p>}
         {notice && <p className="payment-notice" role="alert">{notice}</p>}
         <p className="payment-safety"><ShieldCheck size={15}/> PayPal handles the hosted payment credentials. Avelune must verify server-side capture results and signed webhooks before confirming payment.</p>

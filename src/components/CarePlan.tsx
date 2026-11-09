@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { HeartHandshake, ShieldCheck } from 'lucide-react';
 
-type CarePlanProps = { role: 'patient' | 'clinician'; onNotice: (message: string) => void };
+type CarePlanProps = { role: 'patient' | 'caregiver' | 'clinician'; onNotice: (message: string) => void };
 
 const pathways: Record<string, { title: string; intro: string; tasks: string[] }> = {
   appointment: {

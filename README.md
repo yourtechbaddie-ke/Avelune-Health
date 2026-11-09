@@ -1,43 +1,75 @@
 # Avelune Health
 
-**The Love of Life.** An inclusive, AI-assisted cancer-care companion connecting patients, caregivers and qualified healthcare professionals. Belle is the platform's conversational AI companion.
+**The Love of Life.** An inclusive, AI-assisted cancer-care navigation and support platform concept connecting patients, caregivers and qualified healthcare professionals. Belle is the planned AI care companion.
 
-> Clinical safety: Avelune Health is a care-navigation and support prototype, not a diagnostic device. Belle does not diagnose cancer, interpret facial appearance as evidence of disease, prescribe treatment or replace a clinician. Urgent symptoms must be escalated to local emergency services or a qualified professional.
+> **Clinical safety:** Avelune Health is a care-navigation prototype, not a diagnostic device or emergency service. Belle must not diagnose cancer, infer disease from images or voice, prescribe treatment, or replace a qualified clinician. For severe, sudden or rapidly worsening symptoms, seek urgent medical care.
 
-## MVP foundation
-- Patient and clinician entry points with role-aware demo flows
-- Symptom journal and appointment / medication timeline concepts
-- Belle companion interface with transparent AI status and safe boundaries
-- Care navigation and nearby-facility discovery placeholder
-- PayPal sandbox integration boundary (credentials are never committed)
-- Responsive installable web app foundation; native packaging can follow
+## What works in this prototype
+
+- Responsive React + TypeScript web experience.
+- Patient and healthcare-professional demo views.
+- Session-local symptom journal and general appointment question prompts.
+- Care timeline with clearly labelled illustrative content.
+- Interactive appointment, information, caregiver and wellbeing preparation checklists.
+- FastAPI service for public care-pathway content, platform health and safety guidance.
+- Automated frontend build and backend API tests through GitHub Actions.
+
+## What is not connected yet
+
+There are no patient accounts, verified clinician accounts, secure health-record storage, caregiver permissions, real appointments, live consultations, AI conversations, facility directory, or payments. The API intentionally does not accept or store personal health information. All examples are illustrative; use synthetic data only.
 
 ## Run locally
-Requirements: Node.js 20+
+
+Requirements: Node.js 20+ and Python 3.12+.
+
+### Frontend
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Open the local URL printed by Vite. Build with `npm run build` and preview with `npm run preview`.
+Vite prints the local frontend URL (normally http://localhost:5173).
 
-## Run the API locally\n\nSee [backend setup instructions](backend/README.md). The API currently serves static, non-personal content only.\n\n## Environment
-Copy `.env.example` to `.env.local` and fill in credentials only when implementing the corresponding server-side integrations. Never expose PayPal secrets, database service keys, medical API credentials or model keys in client code.
+### API
+
+In a second terminal:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\\Scripts\\activate
+pip install -r backend/requirements.txt
+uvicorn app.main:app --app-dir backend --reload --port 8000
+```
+
+Available API routes:
+
+- `GET /health` — service health and data-mode disclosure.
+- `GET /v1/care-pathways` — public preparation checklists used by the frontend when the API is available.
+- `GET /v1/safety` — clinical-safety boundaries and urgent-care guidance.
+
+API documentation is available at http://localhost:8000/docs during local development.
+
+## Environment
+
+Copy `.env.example` to `.env.local` for the frontend. Configure `AVELUNE_ALLOWED_ORIGINS` on the API host as a comma-separated list of exact frontend origins. Never put database credentials, PayPal secrets, health-data keys or AI-provider secrets in Vite/browser variables or source control.
 
 ## Planned architecture
-- Frontend: React + TypeScript + Vite; responsive PWA baseline
-- AI: provider-agnostic conversational layer; real-time voice/video avatar integration is a separate secured service
-- Backend: FastAPI foundation serving non-personal care-navigation and safety content; authenticated records API and encrypted database remain future work
-- Payments: PayPal Orders API through a server-side integration
-- Clinical operations: licensed clinicians retain responsibility for diagnosis, triage and treatment
+
+- Frontend: React, TypeScript and Vite; responsive PWA foundation.
+- API: FastAPI; currently limited to public, non-personal content.
+- Data: secure persistence is not implemented. Select and review a database, encryption, backups, access controls and retention design before storing any health information.
+- AI: provider-agnostic Belle integration, subject to privacy, consent and clinical-safety review.
+- Payments: PayPal integration through server-side order creation and capture; not implemented.
+- Clinical operations: qualified professionals retain responsibility for diagnosis, triage and treatment.
 
 ## Privacy and safety
-Use synthetic data only in this prototype. Before real patient use, implement informed consent, data minimization, encryption in transit and at rest, access controls, retention/deletion workflows, audit logging, incident response and applicable health-data/privacy compliance in every operating jurisdiction. Do not use this prototype for emergency care.
 
-## Project guidance
-- [Hackathon MVP plan](docs/HACKATHON_MVP.md)
-- [Clinical safety and privacy guardrails](docs/SAFETY_AND_PRIVACY.md)
+Before real patient use, complete a privacy impact assessment and jurisdiction-specific legal and clinical review. Implement informed consent, data minimisation, encryption in transit and at rest, authentication, least-privilege role permissions, caregiver authorisation and revocation, audit logs, retention/deletion, backups and incident response. Review all AI providers and subprocessors before sending any health information to them.
+
+See [Safety and Privacy Guardrails](docs/SAFETY_AND_PRIVACY.md) and the [Hackathon MVP plan](docs/HACKATHON_MVP.md).
 
 ## License
+
 MIT — see [LICENSE](LICENSE).

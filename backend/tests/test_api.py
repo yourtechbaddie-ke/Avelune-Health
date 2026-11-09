@@ -28,3 +28,17 @@ def test_security_headers_are_present():
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-frame-options"] == "DENY"
     assert response.headers["cache-control"] == "no-store"
+
+
+def test_payment_capabilities_disclose_disabled_live_payments_and_all_planned_rails():
+    response = client.get("/v1/payment-capabilities")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["enabled_for_live_payments"] is False
+    assert body["currency_standard"] == "ISO 4217 three-letter currency codes"
+    methods = {item["id"]: item for item in body["methods"]}
+    assert set(methods) == {"paypal", "mpesa", "bank_transfer"}
+    assert all(item["status"] == "planned" for item in methods.values())
+    assert "webhook" in methods["paypal"]["notes"].lower()
+    assert "screenshot" in methods["mpesa"]["notes"].lower()
+    assert "reconcile" in methods["bank_transfer"]["notes"].lower()

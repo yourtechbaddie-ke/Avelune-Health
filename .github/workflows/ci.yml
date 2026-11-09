@@ -34,4 +34,6 @@ jobs:
         run: pip install -r backend/requirements.txt
       - name: Test API
         working-directory: backend
+        env:
+          PYTHONPATH: ${{ github.workspace }}/backend
         run: pytest -q

@@ -1,52 +1,67 @@
 import { useState } from 'react';
-import { ArrowUpRight, Building2, CheckCircle2, CreditCard, LockKeyhole, ShieldCheck, Smartphone } from 'lucide-react';
+import { ArrowUpRight, CheckCircle2, CreditCard, LockKeyhole, ShieldCheck } from 'lucide-react';
 
-type PaymentMethod = 'paypal' | 'mpesa' | 'bank_transfer';
-
-
-
-const methods: { id: PaymentMethod; label: string; description: string; icon: typeof CreditCard }[] = [
-  { id: 'paypal', label: 'PayPal', description: 'Pay securely where PayPal is supported', icon: CreditCard },
-  { id: 'mpesa', label: 'M-Pesa', description: 'Mobile money · initially Kenya', icon: Smartphone },
-  { id: 'bank_transfer', label: 'Bank transfer', description: 'Transfer using a verified invoice reference', icon: Building2 },
-];
+const API = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
 
 export default function PaymentCenter() {
-  const [method, setMethod] = useState<PaymentMethod>('mpesa');
-  const [currency, setCurrency] = useState('KES');
   const [notice, setNotice] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [amount, setAmount] = useState('5.00');
+  const [currency, setCurrency] = useState('USD');
+
+  async function beginCheckout() {
+    setNotice('');
+    setBusy(true);
+    try {
+      const response = await fetch(`${API}/v1/payments/paypal/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, currency, description: 'Avelune Health demo support session' }),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail ?? 'PayPal checkout could not be started.');
+      const approval = data.links?.find((link: { rel: string; href: string }) => link.rel === 'approve')?.href;
+      if (!approval) throw new Error('PayPal did not return an approval link.');
+      window.location.assign(approval);
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Checkout is unavailable. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const returnedOrder = params.get('token');
+  const cancelled = params.has('cancelled');
 
   return <section className="payments-section" id="payments">
     <div className="payments-heading">
-      <span className="eyebrow">CARE WITHOUT THE EXTRA JOURNEY</span>
-      <h2>Pay for care, <em>wherever you are.</em></h2>
-      <p>Review a provider's invoice and pay remotely for eligible services such as home visits, consultations, therapy and caregiving. Payment methods and currencies depend on provider and country availability.</p>
+      <span className="eyebrow">PAYPAL-POWERED CARE ACCESS</span>
+      <h2>Support that moves <em>with you.</em></h2>
+      <p>PayPal is Avelune's primary payment rail for eligible paid support services. The sandbox checkout below demonstrates a server-created PayPal order. It uses test funds only.</p>
     </div>
     <div className="payment-layout">
       <article className="invoice-card">
-        <div className="invoice-top"><span className="eyebrow">ILLUSTRATIVE INVOICE · DEMO ONLY</span><span className="invoice-status">Awaiting payment</span></div>
-        <div className="invoice-provider"><div className="provider-avatar">AN</div><div><b>Dr. Amina Njoroge</b><span>Example home-care provider · synthetic data</span></div></div>
-        <div className="invoice-service"><span>Home visit and consultation</span><b>KES 4,500</b></div>
-        <div className="invoice-service muted"><span>Issued</span><span>9 November 2026</span></div>
-        <div className="invoice-total"><span>Invoice total</span><strong>KES 4,500</strong></div>
-        <p className="invoice-footnote">This sample invoice is fictional. It is not a request for payment and does not represent a verified clinician or service.</p>
+        <div className="invoice-top"><span className="eyebrow">SAMPLE SERVICE · SANDBOX</span><span className="invoice-status">Test transaction</span></div>
+        <div className="invoice-provider"><div className="provider-avatar">AH</div><div><b>Avelune Health</b><span>Illustrative support session · synthetic demo</span></div></div>
+        <div className="invoice-service"><span>Care navigation support session</span><b>USD 5.00</b></div>
+        <div className="invoice-service muted"><span>Payment processor</span><span>PayPal Sandbox</span></div>
+        <div className="invoice-total"><span>Demo total</span><strong>USD 5.00</strong></div>
+        <p className="invoice-footnote">This is a sandbox demonstration, not a real clinical appointment, therapy booking or request for real money. No patient health information is sent to PayPal.</p>
       </article>
       <article className="checkout-card">
-        <div className="checkout-title"><div><span className="eyebrow">SECURE PAYMENT EXPERIENCE</span><h3>Choose how to pay</h3></div><LockKeyhole/></div>
-        <div className="payment-methods">
-          {methods.map(({ id, label, description, icon: Icon }) => <button type="button" key={id} className={method === id ? 'payment-method active' : 'payment-method'} onClick={() => { setMethod(id); setNotice(''); }}>
-            <Icon/><span><b>{label}</b><small>{description}</small></span><span className="method-radio">{method === id ? '✓' : ''}</span>
-          </button>)}
-        </div>
-        <label className="currency-label" htmlFor="payment-currency">Preferred payment currency (ISO 4217)</label>
-        <input id="payment-currency" className="currency-code-input" value={currency} maxLength={3} autoCapitalize="characters" autoComplete="off" placeholder="e.g. KES, USD, EUR" onChange={event => { setCurrency(event.target.value.toUpperCase().replace(/[^A-Z]/g, '')); setNotice(''); }} aria-describedby="currency-help" />
-        <p className="currency-note" id="currency-help">Enter any three-letter ISO 4217 currency code. The live checkout will validate whether the selected provider supports it in your country. This demo does not convert the invoice or quote an exchange rate; the final amount, currency and fees must be provider-confirmed before approval.</p>
-        <button type="button" className="button primary full" disabled={currency.length !== 3} onClick={() => setNotice('Secure checkout is not connected yet. No payment has been initiated or collected.')}>Preview payment <ArrowUpRight size={16}/></button>
-        {notice && <p className="payment-notice" role="status"><CheckCircle2 size={16}/>{notice}</p>}
-        <p className="payment-safety"><ShieldCheck size={15}/> Avelune will never ask for your M-Pesa PIN, card security code or online-banking password. Provider confirmation—not a screenshot—will determine payment status.</p>
+        <div className="checkout-title"><div><span className="eyebrow">SECURE HOSTED CHECKOUT</span><h3>Continue with PayPal</h3></div><CreditCard/></div>
+        <label className="currency-label" htmlFor="demo-amount">Sandbox amount (USD)</label>
+        <input id="demo-amount" className="currency-code-input" value={amount} inputMode="decimal" onChange={event => setAmount(event.target.value)} aria-label="Sandbox amount in USD"/>
+        <p className="currency-note">For the hackathon demonstration only. The API validates the amount and creates the order using server-side PayPal Sandbox credentials. No card details or PayPal passwords are handled by Avelune.</p>
+        <button type="button" className="button primary full" disabled={busy || !/^\d+(\.\d{1,2})?$/.test(amount) || Number(amount) <= 0 || Number(amount) > 100} onClick={beginCheckout}>{busy ? 'Connecting to PayPal…' : 'Pay with PayPal Sandbox'} <ArrowUpRight size={16}/></button>
+        {returnedOrder && <p className="payment-notice" role="status"><CheckCircle2 size={16}/> Returned from PayPal with order reference {returnedOrder}. The server must capture and verify it before marking any invoice paid.</p>}
+        {cancelled && <p className="payment-notice" role="status">PayPal checkout was cancelled. No payment has been recorded.</p>}
+        {notice && <p className="payment-notice" role="alert">{notice}</p>}
+        <p className="payment-safety"><ShieldCheck size={15}/> PayPal handles the hosted payment credentials. Avelune must verify server-side capture results and signed webhooks before confirming payment.</p>
       </article>
     </div>
-    <div className="payment-guardrails"><span><ShieldCheck/> Verified care providers</span><span><LockKeyhole/> Protected payment processing</span><span><Building2/> Receipts, refunds and billing support</span></div>
-    <p className="payment-disclaimer">Live payments are not enabled in this prototype. PayPal, M-Pesa and bank-transfer integrations, provider verification, currency conversion quotes and refund processing are still being implemented. Medication payments will require an authorised pharmacy or dispensing provider.</p>
+    <div className="payment-guardrails"><span><ShieldCheck/> PayPal Sandbox integration</span><span><LockKeyhole/> Credentials stay server-side</span><span><CheckCircle2/> Server-side order verification</span></div>
+    <p className="payment-disclaimer">Paid therapy, video consultations and clinical services will only be listed after the provider, qualifications, availability, price, consent, refund terms and applicable regulatory requirements are verified. The demo payment is not a real booking.</p>
   </section>;
 }

@@ -1,6 +1,6 @@
 import { CalendarDays, CheckCircle2, Pill, ShieldCheck, Users } from 'lucide-react';
 
-type CareTimelineProps = { role: 'patient' | 'clinician'; onNotice: (message: string) => void };
+type CareTimelineProps = { role: 'patient' | 'caregiver' | 'clinician'; onNotice: (message: string) => void };
 
 const patientItems = [
   { kind: 'appointment', date: 'Demo · 18 Nov', title: 'Care team check-in', detail: 'A sample appointment reminder. No booking has been made.', icon: CalendarDays },
@@ -15,11 +15,11 @@ const clinicianItems = [
 ];
 
 export default function CareTimeline({ role, onNotice }: CareTimelineProps) {
-  const items = role === 'patient' ? patientItems : clinicianItems;
+  const items = role === 'clinician' ? clinicianItems : patientItems;
   return <section className="timeline-section" id="timeline">
     <div className="timeline-heading">
-      <div><span className="eyebrow">A CLEARER VIEW OF WHAT'S NEXT</span><h2>{role === 'patient' ? 'Your care timeline.' : 'Care coordination.'}</h2>
-      <p>{role === 'patient' ? 'A simple place to organise appointments, medication questions and the next conversation.' : 'A sample view of the coordination tasks a verified care professional may manage.'}</p></div>
+      <div><span className="eyebrow">A CLEARER VIEW OF WHAT'S NEXT</span><h2>{role === 'clinician' ? 'Care coordination.' : role === 'caregiver' ? 'The support timeline.' : 'Your care timeline.'}</h2>
+      <p>{role === 'clinician' ? 'A sample view of the coordination tasks a verified care professional may manage.' : 'A simple place to organise appointments, practical support and the next conversation.'}</p></div>
       <span className="demo-label">SAMPLE WORKFLOW</span>
     </div>
     <div className="timeline-list">

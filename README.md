@@ -11,6 +11,15 @@
 - Patient/caregiver/clinician demo workspace, session-only notes, appointment planning, care timeline and preparation checklists.\n- **Avelune Connect (planned):** private patient-authorised group conversations, peer support, caregiver/clinician communication and scheduled voice/video calls. The security architecture and implementation gates are documented in [Avelune Connect & Security Architecture](docs/AVELUNE_CONNECT_AND_SECURITY_ARCHITECTURE.md).
 - FastAPI backend, React + TypeScript frontend, automated CI.
 
+## Product design and rebuild specification
+
+The product source of truth and Google AI Studio rebuild instructions are maintained in the repository:
+
+- [Avelune Product & Experience Blueprint](docs/AVELUNE_PRODUCT_AND_EXPERIENCE_BLUEPRINT.md) — product vision, page map, design system, three distinct role dashboards, workflows, technical architecture, privacy requirements and acceptance criteria.
+- [Google AI Studio Master Prompt](docs/GOOGLE_AI_STUDIO_MASTER_PROMPT.md) — complete prompt for rebuilding the app while preserving the existing React + TypeScript frontend, FastAPI backend, API contracts and Render deployment target.
+
+The three authenticated dashboards must have distinct layouts and information architectures: **Patient / My Care**, **Caregiver / Care Coordination**, and **Healthcare Professional / Clinical Workspace**. They are not interchangeable dashboard themes.
+
 ## Run locally
 
 Requirements: Node.js 20+ and Python 3.12+.

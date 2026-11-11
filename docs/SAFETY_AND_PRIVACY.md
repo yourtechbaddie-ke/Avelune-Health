@@ -49,3 +49,8 @@ The current prototype must use synthetic data only. Before collecting real healt
 ## Prototype status
 
 The current web app is an early frontend prototype. Its symptom journal is session-local and is not a secure medical record. Authentication, clinician verification, encrypted persistence, live consultations, emergency integrations, payments and production AI are not yet implemented. Do not use it to make care decisions or submit real patient data.
+
+
+## Avelune Connect — planned, not yet available
+
+Avelune Connect is a proposed private communication and scheduling module. The current prototype does not support user-to-user messaging, end-to-end encryption, group chat, call scheduling, voice/video calls or secure sharing of health updates. Do not use it to exchange real patient information. See [Avelune Connect & Security Architecture](AVELUNE_CONNECT_AND_SECURITY_ARCHITECTURE.md) for the threat model requirements, encryption design constraints, permission model and release gates. E2EE must not be claimed until a mature protocol is correctly integrated and independently reviewed.

@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { ArrowUpRight, Bot, ExternalLink, LoaderCircle, ShieldCheck, Sparkles, X } from 'lucide-react';
 
 type Message = { role: 'user' | 'assistant'; content: string; sources?: { title: string; url: string }[] };
-const API = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+const API = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.DEV ? 'http://localhost:8000' : '');
 
 export default function BelleChat({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [messages, setMessages] = useState<Message[]>([{ role: 'assistant', content: "Hello, I'm Belle. I can help you understand general cancer-care information, prepare questions for your care team, and find verified services. I can't diagnose, prescribe or replace a clinician. What would you like help with today?" }]);

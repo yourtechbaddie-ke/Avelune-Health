@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import re
 import secrets
 from decimal import Decimal, InvalidOperation
@@ -8,6 +9,7 @@ import httpx
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, field_validator
 from .auth import CognitoSettings, require_current_principal
 
@@ -209,3 +211,10 @@ async def auth_me(principal: dict = Depends(require_current_principal)):
 @app.exception_handler(Exception)
 async def safe_unexpected_error(request, exc):
     return JSONResponse(status_code=500, content={"detail": "An unexpected server error occurred."})
+
+
+# Serve the built React application from the same origin as the API.
+# Render builds the frontend into the repository-level dist/ directory first.
+frontend_dist = Path(__file__).resolve().parents[2] / "dist"
+if frontend_dist.is_dir():
+    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")

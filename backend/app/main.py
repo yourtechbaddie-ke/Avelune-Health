@@ -214,7 +214,17 @@ async def safe_unexpected_error(request, exc):
 
 
 # Serve the built React application from the same origin as the API.
-# Render builds the frontend into the repository-level dist/ directory first.
+# Unknown paths fall back to index.html so direct visits and refreshes work
+# on every client-side route (for example /workspace or /payments).
+class SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as exc:
+            if exc.status_code == 404:
+                return await super().get_response("index.html", scope)
+            raise
+
 frontend_dist = Path(__file__).resolve().parents[2] / "dist"
 if frontend_dist.is_dir():
-    app.mount("/", StaticFiles(directory=str(frontend_dist), html=True), name="frontend")
+    app.mount("/", SPAStaticFiles(directory=str(frontend_dist), html=True), name="frontend")

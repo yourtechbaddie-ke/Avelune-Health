@@ -8,7 +8,7 @@
 - **PayPal Sandbox:** server-created checkout orders, hosted PayPal approval, server-side capture and webhook-signature verification. Sandbox only; no real charges.
 - **Verified Kenya care directory:** source-linked institutional facilities and public institutional contacts, with explicit verification caveats.
 - **Evidence-linked education:** links to the National Cancer Institute of Kenya, Kenya National Cancer Treatment Protocols, the US National Cancer Institute's general treatment overview and KMPDC registers.
-- Patient/caregiver/clinician demo workspace, session-only notes, appointment planning, care timeline and preparation checklists.
+- Patient/caregiver/clinician demo workspace, session-only notes, appointment planning, care timeline and preparation checklists.\n- **Avelune Connect (planned):** private patient-authorised group conversations, peer support, caregiver/clinician communication and scheduled voice/video calls. The security architecture and implementation gates are documented in [Avelune Connect & Security Architecture](docs/AVELUNE_CONNECT_AND_SECURITY_ARCHITECTURE.md).
 - FastAPI backend, React + TypeScript frontend, automated CI.
 
 ## Run locally
@@ -65,7 +65,7 @@ General treatment education is linked to the [National Cancer Institute (US)](ht
 
 - Live AI requires an API key and must undergo privacy/security review before real patient data is processed. Do not enter identifying information or upload medical records in this demo.
 - PayPal is Sandbox only. No real patient fees, therapy bookings, provider payouts, refunds or production charges are enabled.
-- No video calls or live clinician booking are implemented yet. Do not advertise these as available.
+- Avelune Connect is currently a documented product direction, not a live messaging or calling service. No user-to-user chat, end-to-end encryption, call scheduling or voice/video calls are implemented yet. Do not advertise these as available.
 - Workspace entries are session-only; no real medical record storage is implemented.
 - Provider profiles, credentials, appointment calendars and clinician availability are not yet onboarded/verified.
 - This is a hackathon prototype, not a clinical service or emergency service. For severe, sudden or rapidly worsening symptoms, seek urgent medical attention.

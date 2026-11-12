@@ -1,41 +1,445 @@
-import { useEffect, useState } from 'react';
-import { Activity, ArrowRight, ArrowUpRight, BookOpen, CalendarDays, CreditCard, HeartHandshake, MapPin, Menu, MessageCircle, ShieldCheck, Sparkles, Stethoscope, X } from 'lucide-react';
-import CareTimeline from './components/CareTimeline';
-import CarePlan from './components/CarePlan';
-import PaymentCenter from './components/PaymentCenter';
+import { useState, useEffect } from 'react';
+import { UserProfile } from './types';
+import { INITIAL_USERS } from './data/mockData';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import Navigation from './components/Navigation';
+import AuthFlow from './components/AuthFlow';
+import RoleSwitcherModal from './components/RoleSwitcherModal';
+import DailyPoetrySection from './components/DailyPoetrySection';
+import PatientProfiles from './components/PatientProfiles';
+import CommunityFeed from './components/CommunityFeed';
+import PublicGroups from './components/PublicGroups';
+import HospitalLocator from './components/HospitalLocator';
+import TelehealthCenter from './components/TelehealthCenter';
+import HealingCorner from './components/HealingCorner';
+import SurvivorInspiration from './components/SurvivorInspiration';
+import EventsAndConferences from './components/EventsAndConferences';
+import ClinicianPortal from './components/ClinicianPortal';
 import BelleChat from './components/BelleChat';
-import VerifiedCareDirectory from './components/VerifiedCareDirectory';
+import EncryptedSecurityBadge from './components/EncryptedSecurityBadge';
 import Workspace from './components/Workspace';
+import CareTimeline from './components/CareTimeline';
+import {
+  Flower2,
+  Sparkles,
+  Heart,
+  ShieldCheck,
+  ArrowRight,
+  Radio,
+  BookOpen,
+  Calendar,
+  Siren,
+  Car
+} from 'lucide-react';
 
-type Role = 'patient' | 'caregiver' | 'clinician';
-const pages = [{id:'care',label:'Care & support'},{id:'workspace',label:'My workspace'},{id:'timeline',label:'Care timeline'},{id:'belle',label:'Meet Belle'},{id:'directory',label:'Care directory'},{id:'professionals',label:'For professionals'},{id:'payments',label:'Payments'}] as const;
-type Page = 'home' | typeof pages[number]['id'];
-const features = [{icon:Activity,title:'Make sense of the details',body:'Keep a thoughtful record of symptoms and questions to discuss with your care team.',href:'/workspace',tag:'YOUR NOTES'},{icon:CalendarDays,title:'See the bigger picture',body:'Bring appointments, milestones and care-plan details into one organised view.',href:'/timeline',tag:'YOUR JOURNEY'},{icon:HeartHandshake,title:'Find the right support',body:'Explore care navigation and practical support for patients and caregivers.',href:'/directory',tag:'CARE & COMMUNITY'}];
-const pathPage = ():Page => pages.find(p=>p.id===location.pathname.replace(/^\//,''))?.id ?? 'home';
-function App(){
- const [page,setPage]=useState<Page>(pathPage),[role,setRole]=useState<Role>('patient'),[menu,setMenu]=useState(false),[chat,setChat]=useState(false);
- useEffect(()=>{const pop=()=>setPage(pathPage());addEventListener('popstate',pop);return()=>removeEventListener('popstate',pop)},[]);
- const go=(path:string)=>{history.pushState({},'',path);setPage(pathPage());setMenu(false);setChat(false);scrollTo({top:0,behavior:'instant'})};
- const link=(path:string,content:React.ReactNode,cls='')=><a className={cls} href={path} onClick={e=>{e.preventDefault();go(path)}}>{content}</a>;
- const intro=(k:string,t:string,p:string)=><section className="page-intro"><span className="eyebrow">{k}</span><h1>{t}</h1><p>{p}</p></section>;
- return <div className="app-shell">
- <header className="topbar">{link('/',<><span className="brand-mark">a</span><span className="brand-word">avelune <b>health</b><small>MORE LIFE. MORE CARE.</small></span></>,'brand')}<button className="mobile-menu" onClick={()=>setMenu(!menu)} aria-label="Toggle navigation">{menu?<X/>:<Menu/>}</button><nav className={menu?'nav open':'nav'}>{pages.map(p=><a key={p.id} href={'/'+p.id} className={page===p.id?'active':''} onClick={e=>{e.preventDefault();go('/'+p.id)}}>{p.label}</a>)}<button className="nav-cta" onClick={()=>go('/workspace')}>Open workspace <ArrowUpRight size={15}/></button></nav></header>
- <main>
- {page==='home'&&<>
- <section className="editorial-hero"><div className="hero-copy"><div className="eyebrow"><span className="pulse"/> CARE, WITH THE WHOLE PERSON IN MIND</div><h1>More life.<br/><em>More care.</em></h1><p className="hero-lede">A little more clarity in uncertain moments. A little more support through every step. A care experience that keeps the whole person in view.</p><div className="hero-actions">{link('/care',<>Explore Avelune <ArrowUpRight size={17}/></>,'button primary')}<button className="button secondary" onClick={()=>{go('/belle');setChat(true)}}><MessageCircle size={17}/> Meet Belle</button></div><div className="trust-line"><ShieldCheck size={17}/> Human-led care, thoughtfully supported by technology</div></div><div className="hero-composition"><div className="hero-image-wash"/><div className="hero-arch"><div className="arch-inner"><span>AVELUNE</span><b>Care is a<br/><i>human connection.</i></b><small>01 — A MORE CONSIDERED WAY TO CARE</small></div></div><div className="hero-side-note"><span>01 / 04</span><b>Every journey<br/>is personal.</b><small>YOU ARE NOT ALONE HERE.</small></div></div></section>
- <section className="home-intro"><div><span className="eyebrow">A PLACE TO BEGIN</span><h2>Care should feel<br/><em>connected.</em></h2></div><p>Whether you're navigating a diagnosis, supporting someone you love or providing care, Avelune brings useful tools and thoughtful support into one considered space.</p></section>
- <section className="home-services"><div className="section-kicker"><span className="eyebrow">EXPLORE THE EXPERIENCE</span><h2>Support for every<br/><em>part of the journey.</em></h2></div><div className="service-grid">{features.map(({icon:Icon,title,body,href,tag},i)=><article className="service-card" key={title}><span className="service-number">0{i+1}</span><div className="service-icon"><Icon/></div><span className="eyebrow">{tag}</span><h3>{title}</h3><p>{body}</p>{link(href,<>Discover more <ArrowUpRight size={15}/></>,'text-link')}</article>)}</div></section>
- <section className="home-quote"><span className="eyebrow">THE AVELUNE PROMISE</span><blockquote>“You are more than a diagnosis. Your care should reflect that.”</blockquote><p>Thoughtful tools. Clearer conversations. People at the heart of every decision.</p></section><section className="home-cta"><div><span className="eyebrow">YOUR NEXT STEP STARTS HERE</span><h2>A more supported<br/><em>way forward.</em></h2></div>{link('/workspace',<>Enter your care space <ArrowRight size={17}/></>,'button light')}</section>
- </>}
- {page==='care'&&<>{intro('YOUR SPACE, YOUR JOURNEY','Care that sees the whole you.','Choose the support that best reflects where you are today. Avelune is designed to bring clarity to patients, caregivers and healthcare professionals.')}<section className="content-section"><div className="role-tabs"><button className={role==='patient'?'selected':''} onClick={()=>setRole('patient')}>I'm a patient</button><button className={role==='caregiver'?'selected':''} onClick={()=>setRole('caregiver')}>I'm a caregiver</button><button className={role==='clinician'?'selected':''} onClick={()=>setRole('clinician')}>I'm a healthcare professional</button></div><div className="role-feature"><div><span className="eyebrow">{role==='clinician'?'CLINICAL WORKSPACE':role==='caregiver'?'CAREGIVER SPACE':'YOUR CARE OVERVIEW'}</span><h2>{role==='clinician'?'Care teams deserve connected tools.':role==='caregiver'?'Support that respects their choices.':'Your care, in one considered place.'}</h2><p>{role==='clinician'?'A future-facing space for care teams to coordinate appointments, follow-ups and patient-authorised updates.':role==='caregiver'?'Coordinate practical support with the patient’s permission and keep their preferences at the centre.':'Keep track of what matters and bring your questions to the people who care for you.'}</p>{link('/workspace',<>Go to my workspace <ArrowRight size={16}/></>,'text-link')}</div><div className="role-feature-mark"><HeartHandshake/></div></div></section><section className="content-section"><div className="section-heading"><span className="eyebrow">A MORE CONNECTED EXPERIENCE</span><h2>Thoughtful tools, in their own spaces.</h2></div><div className="mini-link-grid">{[{icon:Activity,title:'Symptom journal',body:'Record what you notice and prepare for conversations.',href:'/workspace'},{icon:CalendarDays,title:'Care timeline',body:'Keep appointments and milestones in view.',href:'/timeline'},{icon:MapPin,title:'Find care',body:'Explore care navigation and directory information.',href:'/directory'}].map(({icon:Icon,title,body,href})=><article className="mini-link" key={title}><Icon/><h3>{title}</h3><p>{body}</p>{link(href,'Explore →','text-link')}</article>)}</div></section></>}
- {page==='workspace'&&<>{intro('YOUR PRIVATE SPACE','Your care, in one place.','A practical workspace for keeping notes, reviewing your care information and preparing for conversations with your care team.')}<section className="content-section"><Workspace role={role}/></section></>}
- {page==='timeline'&&<>{intro('THE JOURNEY, MADE CLEARER','Your care timeline.','Bring the moving parts of care into a clearer sequence. Use these tools to organise information and prepare for conversations with qualified professionals.')}<section className="content-section"><CareTimeline role={role} onNotice={()=>{}}/><CarePlan role={role} onNotice={()=>{}}/></section></>}
- {page==='belle'&&<>{intro('A COMPANION, NOT A REPLACEMENT','Meet Belle.','A thoughtful AI companion to help you prepare, reflect and find your next step — with qualified people always at the heart of care.')}<section className="belle-page"><div className="belle-page-art"><Sparkles/><span>BELLE</span><small>YOUR AI CARE COMPANION</small></div><div className="belle-page-copy"><h2>A little more clarity, whenever you need it.</h2><p>Belle can help you organise questions, understand general cancer-care information and find practical next steps. She cannot diagnose, prescribe or replace a qualified healthcare professional.</p><ul><li><MessageCircle/> Talk through questions and concerns</li><li><Activity/> Organise symptom notes for your clinician</li><li><BookOpen/> Prepare for appointments</li><li><HeartHandshake/> Find supportive wellbeing resources</li></ul><button className="button primary" onClick={()=>setChat(true)}>Start a conversation <ArrowUpRight size={16}/></button></div></section></>}
- {page==='directory'&&<>{intro('CARE NAVIGATION','Find support and care.','Explore the care directory experience. Provider availability and professional credentials must be independently confirmed before making care decisions.')}<section className="content-section"><VerifiedCareDirectory/></section></>}
- {page==='professionals'&&<>{intro('FOR THE PEOPLE WHO PROVIDE CARE','Better connected care starts together.','Avelune is being developed to support patients, caregivers and healthcare professionals with clearer communication and more coordinated care.')}<section className="professional-page"><div><Stethoscope/><span className="eyebrow">FOR CLINICIANS & CARE TEAMS</span><h2>Keep the human connection at the centre.</h2><p>We are shaping tools that can support care coordination, patient-authorised updates and more informed conversations. Professional onboarding and verified provider workflows are not yet open.</p><a className="button primary" href="mailto:hello@avelunehealth.com?subject=Avelune%20Health%20professional%20enquiry">Register your interest <ArrowUpRight size={16}/></a></div><div className="professional-aside"><ShieldCheck/><h3>Trust is foundational.</h3><p>Provider identity, credentials, consent and secure access must be verified before clinical workflows go live.</p></div></section></>}
- {page==='payments'&&<>{intro('PAYMENTS & SERVICES','Clearer, simpler payments.','Avelune’s payment experience is currently configured for PayPal Sandbox testing only. No real patient charges are enabled.')}<section className="content-section"><div className="payment-note"><CreditCard/><div><b>Sandbox environment</b><p>Test payment flows only. Do not enter real payment details. Live payments require production credentials, verified webhook processing, reconciliation and compliance review.</p></div></div><PaymentCenter/></section></>}
- </main>
- <footer className="site-footer"><div className="footer-main">{link('/',<><span className="brand-mark">a</span><span className="brand-word">avelune <b>health</b><small>MORE LIFE. MORE CARE.</small></span></>,'brand')}<p>Care is a human connection.</p></div><div className="footer-links">{pages.map(p=><a key={p.id} href={'/'+p.id} onClick={e=>{e.preventDefault();go('/'+p.id)}}>{p.label}</a>)}</div><div className="footer-bottom"><span>© 2026 Avelune Health</span><span>Thoughtful support. Human-led care.</span><span>Not an emergency service or a medical diagnosis tool.</span></div></footer>
- <BelleChat open={chat} onClose={()=>setChat(false)}/></div>
+function AppContent() {
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(() => {
+    const saved = localStorage.getItem('avelune_current_user');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [currentPage, setCurrentPage] = useState<string>('home');
+  const [isRoleSwitcherOpen, setIsRoleSwitcherOpen] = useState(false);
+  const [isBelleChatOpen, setIsBelleChatOpen] = useState(false);
+  const { t, currentLangInfo } = useLanguage();
+
+  const handleAuthenticated = (user: UserProfile) => {
+    setCurrentUser(user);
+    localStorage.setItem('avelune_current_user', JSON.stringify(user));
+    setCurrentPage('home');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const handleSignOut = () => {
+    localStorage.removeItem('avelune_current_user');
+    setCurrentUser(null);
+  };
+
+  const handleSelectUser = (user: UserProfile) => {
+    setCurrentUser(user);
+    localStorage.setItem('avelune_current_user', JSON.stringify(user));
+  };
+
+  // If user is not yet logged in / signed up, show the Logo Splash -> Sign Up -> Login flow
+  if (!currentUser) {
+    return <AuthFlow onAuthenticated={handleAuthenticated} />;
+  }
+
+  const role = currentUser.role === 'oncologist' || currentUser.role === 'medical_doctor'
+    ? 'clinician'
+    : currentUser.role === 'family_caregiver'
+    ? 'caregiver'
+    : 'patient';
+
+  return (
+    <div className="app-sanctuary-shell">
+      {/* Top Bar Navigation */}
+      <Navigation
+        currentPage={currentPage}
+        onNavigate={(page) => setCurrentPage(page)}
+        currentUser={currentUser}
+        onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
+        onOpenBelleChat={() => setIsBelleChatOpen(true)}
+        onSignOut={handleSignOut}
+      />
+
+      {/* Main Pages Router */}
+      <main className="main-content-canvas">
+        {/* 1. HOMEPAGE SANCTUARY */}
+        {currentPage === 'home' && (
+          <div className="sanctuary-home-wrapper">
+            {/* Exquisite Floral Botanical Hero */}
+            <section className="editorial-botanical-hero">
+              <div className="hero-text-side">
+                <div className="botanical-flourish">
+                  <Flower2 size={22} className="text-wine" />
+                  <span className="script-kicker">“{t('tagline')}”</span>
+                </div>
+
+                <h1 className="hero-display-title font-serif">
+                  A sanctuary where <br />
+                  <em>healing begins in the heart.</em>
+                </h1>
+
+                <p className="hero-deckle-lede">
+                  More life. More care. A considered space uniting cancer warriors, oncologists,
+                  caregivers, and poets. From in-built PayPal patient donations and hospital transit
+                  to daily Instagram poetry and our AI companion, Belle.
+                </p>
+
+                <div className="hero-action-buttons-strip">
+                  <button
+                    type="button"
+                    className="button-wine"
+                    onClick={() => setCurrentPage('patients')}
+                  >
+                    <Heart size={16} fill="currentColor" />
+                    <span>Support Patient Funds</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    className="hero-secondary-btn"
+                    onClick={() => setIsBelleChatOpen(true)}
+                  >
+                    <Sparkles size={16} className="text-wine" />
+                    <span>Converse with Belle</span>
+                  </button>
+                </div>
+
+                {/* Quick Care Indicator */}
+                <div className="hero-trust-row mt-6 pt-4 border-t border-stone-200 text-xs text-stone-600 flex items-center gap-3">
+                  <ShieldCheck size={16} className="text-emerald-800" />
+                  <span>
+                    Airtight End-to-End Encryption · Verified KMPDC Clinical Protocols · Zero PHI Leaks
+                  </span>
+                </div>
+              </div>
+
+              {/* Visual Hero Composition with generated botanical masterpiece */}
+              <div className="hero-visual-side">
+                <div className="hero-deckle-frame deckle-edge">
+                  <img
+                    src="/src/assets/images/floral_botanical_header_1794486895569.jpg"
+                    alt="Avelune Wild Tea Roses and Golden Flora"
+                    className="hero-botanical-artwork"
+                  />
+                  <div className="hero-artwork-caption">
+                    <span className="script-kicker text-rose-900">Wild Tea Roses & Golden Flora</span>
+                    <p className="text-[11px] text-stone-600 font-serif italic m-0">
+                      “In every wound, nature plants the seed of a quiet blossom.”
+                    </p>
+                  </div>
+                </div>
+
+                {/* Meet Belle Floating Invitation */}
+                <div
+                  className="belle-floating-card deckle-edge cursor-pointer"
+                  onClick={() => setIsBelleChatOpen(true)}
+                >
+                  <img
+                    src="/src/assets/images/belle_care_companion_1794487035850.jpg"
+                    alt="Belle Care Companion"
+                    className="belle-card-thumb"
+                  />
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <strong className="font-serif text-xs text-stone-900 font-semibold">Belle is Online</strong>
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+                    </div>
+                    <span className="text-[10px] text-wine font-serif italic block">
+                      “How is your spirit today?”
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Daily Poetry Showcase Section */}
+            <DailyPoetrySection onOpenGroup={() => setCurrentPage('groups')} />
+
+            {/* Emergency Transit Quick Ribbon */}
+            <section className="px-6 max-w-5xl mx-auto my-12">
+              <div className="emergency-quick-bar deckle-edge">
+                <div className="emergency-text-col">
+                  <div className="flex items-center gap-2 text-wine font-serif text-lg font-medium">
+                    <Siren size={20} className="text-red-700 animate-pulse" />
+                    <span>{t('emergencyTransport')}</span>
+                  </div>
+                  <p className="text-xs text-stone-600 mt-1">
+                    Instant 24/7 ambulance dispatch & hospital taxi booking for patient appointments.
+                  </p>
+                </div>
+                <div className="emergency-buttons-col">
+                  <button
+                    type="button"
+                    className="emergency-ambulance-btn"
+                    onClick={() => setCurrentPage('hospitals')}
+                  >
+                    <Siren size={15} /> {t('requestAmbulance')}
+                  </button>
+                  <button
+                    type="button"
+                    className="medical-taxi-btn"
+                    onClick={() => setCurrentPage('hospitals')}
+                  >
+                    <Car size={15} /> {t('bookTaxi')}
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            {/* 3 Pillar Features of Avelune */}
+            <section className="three-pillars-section px-6 max-w-6xl mx-auto my-16">
+              <div className="section-botanical-header text-center">
+                <span className="script-kicker">Woven for Whole-Person Healing</span>
+                <h2 className="exquisite-heading">A Compassionate Ecosystem</h2>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <article
+                  className="pillar-card deckle-edge p-6 cursor-pointer"
+                  onClick={() => setCurrentPage('patients')}
+                >
+                  <span className="font-mono text-xs text-stone-400">01</span>
+                  <div className="pillar-icon my-3 text-wine">
+                    <Heart size={28} />
+                  </div>
+                  <span className="script-kicker text-rose-800">Direct Patient Care</span>
+                  <h3 className="font-serif text-xl font-medium text-stone-900 mt-1">
+                    In-Built PayPal Donations
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-2">
+                    Transparent patient care campaigns with instant PayPal integration.
+                    100% routed to chemotherapy, surgery, and diagnostics.
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs text-wine font-semibold mt-4">
+                    Explore Patient Profiles <ArrowRight size={13} />
+                  </span>
+                </article>
+
+                <article
+                  className="pillar-card deckle-edge p-6 cursor-pointer"
+                  onClick={() => setCurrentPage('telehealth')}
+                >
+                  <span className="font-mono text-xs text-stone-400">02</span>
+                  <div className="pillar-icon my-3 text-wine">
+                    <Sparkles size={28} />
+                  </div>
+                  <span className="script-kicker text-rose-800">Clinical Telehealth</span>
+                  <h3 className="font-serif text-xl font-medium text-stone-900 mt-1">
+                    Doctors, Therapy & Meds
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-2">
+                    Book board-certified oncologists, licensed psycho-oncology therapy, doctor home visits,
+                    and order supportive hospital medications online.
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs text-wine font-semibold mt-4">
+                    Open Telehealth Center <ArrowRight size={13} />
+                  </span>
+                </article>
+
+                <article
+                  className="pillar-card deckle-edge p-6 cursor-pointer"
+                  onClick={() => setCurrentPage('healing')}
+                >
+                  <span className="font-mono text-xs text-stone-400">03</span>
+                  <div className="pillar-icon my-3 text-wine">
+                    <BookOpen size={28} />
+                  </div>
+                  <span className="script-kicker text-rose-800">Restorative Living</span>
+                  <h3 className="font-serif text-xl font-medium text-stone-900 mt-1">
+                    Music, Games & Retreats
+                  </h3>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-2">
+                    Frequency-calibrated audio, mindful mini-games for children & adults, Wattpad literature,
+                    and Belle Amoura wellness vacation retreats.
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs text-wine font-semibold mt-4">
+                    Visit Healing Corner <ArrowRight size={13} />
+                  </span>
+                </article>
+              </div>
+            </section>
+
+            {/* Airtight Security Banner */}
+            <div className="px-6">
+              <EncryptedSecurityBadge />
+            </div>
+          </div>
+        )}
+
+        {/* 2. DAILY POEMS PAGE */}
+        {currentPage === 'poems' && (
+          <DailyPoetrySection onOpenGroup={() => setCurrentPage('groups')} />
+        )}
+
+        {/* 3. COMMUNITY SOCIAL FEED */}
+        {currentPage === 'community' && (
+          <CommunityFeed
+            currentUser={currentUser}
+            onOpenPatientProfile={() => setCurrentPage('patients')}
+          />
+        )}
+
+        {/* 4. CANCER PATIENT PROFILES & DONATION CENTER */}
+        {currentPage === 'patients' && (
+          <PatientProfiles currentUser={currentUser} />
+        )}
+
+        {/* 5. PUBLIC COLLABORATION GROUPS */}
+        {currentPage === 'groups' && (
+          <PublicGroups currentUser={currentUser} />
+        )}
+
+        {/* 6. HOSPITALS & EMERGENCY TRANSIT */}
+        {currentPage === 'hospitals' && (
+          <HospitalLocator />
+        )}
+
+        {/* 7. TELEHEALTH, THERAPY & HOSPITAL PHARMACY */}
+        {currentPage === 'telehealth' && (
+          <TelehealthCenter currentUser={currentUser} />
+        )}
+
+        {/* 8. HEALING CORNER, MUSIC, GAMES & RETREATS */}
+        {currentPage === 'healing' && (
+          <HealingCorner />
+        )}
+
+        {/* 9. SURVIVOR STORIES, TESTIMONIALS & Q&A */}
+        {currentPage === 'survivors' && (
+          <SurvivorInspiration currentUser={currentUser} />
+        )}
+
+        {/* 10. CONFERENCES & MEETUPS */}
+        {currentPage === 'events' && (
+          <EventsAndConferences currentUser={currentUser} />
+        )}
+
+        {/* 11. CLINICIAN VERIFICATION & PORTAL */}
+        {currentPage === 'clinicians' && (
+          <ClinicianPortal currentUser={currentUser} />
+        )}
+
+        {/* 12. PERSONAL WORKSPACE & TIMELINE */}
+        {currentPage === 'workspace' && (
+          <div className="workspace-page-wrapper px-6 max-w-5xl mx-auto py-10">
+            <div className="section-botanical-header text-center">
+              <span className="script-kicker">Your Private Sanctuary</span>
+              <h2 className="exquisite-heading">Personal Care Workspace</h2>
+              <p className="exquisite-subtext">
+                Record your symptoms, organize questions for your oncology team, and review your care milestones.
+              </p>
+            </div>
+            <Workspace role={role} />
+            <div className="mt-12">
+              <CareTimeline role={role} onNotice={() => {}} />
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Belle Chat Companion Modal */}
+      <BelleChat
+        open={isBelleChatOpen}
+        onClose={() => setIsBelleChatOpen(false)}
+      />
+
+      {/* Role Switcher Perspective Modal */}
+      <RoleSwitcherModal
+        open={isRoleSwitcherOpen}
+        onClose={() => setIsRoleSwitcherOpen(false)}
+        currentUser={currentUser}
+        allUsers={INITIAL_USERS}
+        onSelectUser={handleSelectUser}
+      />
+
+      {/* Exquisite Footer */}
+      <footer className="site-sanctuary-footer">
+        <div className="footer-top-row">
+          <div className="footer-brand-lockup">
+            <span className="brand-monogram">a</span>
+            <div>
+              <span className="text-xl font-serif text-white block">avelune <b>health</b></span>
+              <span className="footer-quote">“{t('tagline')}”</span>
+            </div>
+          </div>
+          <div className="footer-language-tag text-xs text-stone-400">
+            Active Language: <strong>{currentLangInfo.flag} {currentLangInfo.label}</strong>
+          </div>
+        </div>
+
+        <div className="footer-nav-links">
+          {[
+            { id: 'home', label: 'Sanctuary' },
+            { id: 'poems', label: 'Daily Poems' },
+            { id: 'community', label: 'Community' },
+            { id: 'patients', label: 'Patient Funds' },
+            { id: 'hospitals', label: 'Hospitals' },
+            { id: 'telehealth', label: 'Telehealth' },
+            { id: 'healing', label: 'Music & Games' },
+            { id: 'survivors', label: 'Survivor Stories' },
+            { id: 'events', label: 'Conferences' },
+            { id: 'clinicians', label: 'Doctors' },
+            { id: 'workspace', label: 'Workspace' },
+          ].map((lnk) => (
+            <a
+              key={lnk.id}
+              href={`#${lnk.id}`}
+              className="footer-nav-link"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentPage(lnk.id);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            >
+              {lnk.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="footer-bottom-strip">
+          <span>© 2026 Avelune Health · The Love of Life. All rights reserved.</span>
+          <span>End-to-End Encrypted Healthcare & Community Platform.</span>
+          <span>Not an emergency service. For immediate crises, call local emergency medical dispatch.</span>
+        </div>
+      </footer>
+    </div>
+  );
 }
-export default App;
+
+export default function App() {
+  return (
+    <LanguageProvider>
+      <AppContent />
+    </LanguageProvider>
+  );
+}

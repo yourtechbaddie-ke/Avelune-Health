@@ -1,0 +1,8 @@
+{
+  "name": "Avelune Health — The Love of Life",
+  "description": "Intelligent, compassionate cancer care navigation, community collaboration, patient donation support, survivor stories, telehealth, and wellness retreat platform.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
